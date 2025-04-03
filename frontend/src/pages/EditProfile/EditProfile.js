@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 
 // Redux
-import { profile, resetMessage } from "../../slices/userSlice";
+import { profile, updateProfile, resetMessage } from "../../slices/userSlice";
 
 // Components
 import Message from "../../components/Message";
@@ -22,7 +22,7 @@ const EditProfile = () => {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
-    const [imageProfile, setImageProfile] = useState("");
+    const [profileImage, setProfileImage] = useState("");
     const [bio, setBio] = useState("");
     const [previewImage, setPreviewImage] = useState("");
 
@@ -42,8 +42,53 @@ const EditProfile = () => {
         }
     }, [user]);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
+
+        // Get user data from states
+        const userData = {
+            name,
+        };
+
+        if (profileImage) {
+            userData.profileImage = profileImage;
+        }
+
+        if (bio) {
+            userData.bio = bio;
+        }
+        if (password) {
+            userData.password = password;
+        }
+
+        // build form data
+        const formData = new FormData();
+
+        // Adiciona o nome
+        if (name) {
+            formData.append("name", name);
+        }
+
+        // Adiciona a imagem do perfil
+        if (profileImage) {
+            formData.append("profileImage", profileImage);
+        }
+
+        // Adiciona a bio
+        if (bio) {
+            formData.append("bio", bio);
+        }
+
+        // Adiciona a senha
+        if (password) {
+            formData.append("password", password);
+        }
+
+        await dispatch(updateProfile(formData));
+
+        setTimeout(() => {
+            dispatch(resetMessage());
+        }, 2000);
     };
 
     const handleFile = (e) => {
@@ -53,7 +98,7 @@ const EditProfile = () => {
         setPreviewImage(image);
 
         // update image state
-        setImageProfile(image);
+        setProfileImage(image);
     };
 
     return (
@@ -70,7 +115,7 @@ const EditProfile = () => {
                             ? URL.createObjectURL(previewImage)
                             : `${uploads}/users/${user.profileImage}`
                     }
-                    alt=""
+                    alt={user.name}
                 />
             )}
             <form onSubmit={handleSubmit}>
@@ -80,7 +125,12 @@ const EditProfile = () => {
                     onChange={(e) => setName(e.target.value)}
                     value={name || ""}
                 />
-                <input type="email" placeholder="E-mail" value={email || ""} />
+                <input
+                    type="email"
+                    placeholder="E-mail"
+                    disabled
+                    value={email || ""}
+                />
                 <label>
                     <span>Imagem do Perfil:</span>
                     <input type="file" onChange={handleFile} />
@@ -103,7 +153,10 @@ const EditProfile = () => {
                         value={password || ""}
                     />
                 </label>
-                <input type="submit" value="Atualizar" />
+                {!loading && <input type="submit" value="Atualizar" />}
+                {loading && <input type="submit" value="Aguarde..." disabled />}
+                {error && <Message msg={error} type="error" />}
+                {message && <Message msg={message} type="success" />}
             </form>
         </div>
     );

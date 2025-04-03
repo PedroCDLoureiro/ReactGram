@@ -15,8 +15,36 @@ const profile = async (data, token) => {
     }
 };
 
+// Update user details
+const updateProfile = async (data, token) => {
+    const config = requestConfig("PUT", data, token, true);
+
+    try {
+        const res = await fetch(api + "/users", config);
+
+        if (!res.ok) {
+            const errorData = await res.json();
+            throw new Error(
+                errorData.errors?.[0] || `HTTP error! status: ${res.status}`
+            );
+        }
+
+        const json = await res.json();
+        return json;
+    } catch (error) {
+        console.error("Erro ao atualizar perfil:", error);
+        return {
+            errors: [
+                error.message ||
+                    "Erro ao atualizar perfil. Por favor, tente novamente.",
+            ],
+        };
+    }
+};
+
 const userService = {
     profile,
+    updateProfile,
 };
 
 export default userService;
