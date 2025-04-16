@@ -6,7 +6,7 @@ import { Link } from "react-router-dom";
 // components
 import Message from "../../components/Message";
 import PhotoItem from "../../components/PhotoItem";
-import LikeContainer from "../../components/LikeContainer";
+import Likes from "../../components/Likes";
 
 // hooks
 import { useEffect, useState } from "react";
@@ -52,7 +52,7 @@ const Photo = () => {
     return (
         <div id="photo">
             <PhotoItem photo={photo} />
-            <LikeContainer photo={photo} user={user} handleLike={handleLike} />
+            <Likes photo={photo} user={user} handleLike={handleLike} />
             <div className="message-container">
                 {error && <Message msg={error} type="error" />}
                 {message && <Message msg={message} type="success" />}
