@@ -31,3 +31,6 @@ Thumbs.db
 *.gz
 /data/db/
 .mongorc.js
+
+### Uploads ###
+uploads/
